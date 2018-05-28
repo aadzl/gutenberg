@@ -1358,15 +1358,15 @@ export const canInsertBlockType = createSelector(
 			return false;
 		}
 
-		const { allowedBlockTypes, templateLock } = getEditorSettings( state );
+		const { allowedBlockTypes } = getEditorSettings( state );
 
 		const isBlockAllowedInEditor = checkAllowList( allowedBlockTypes, blockName, true );
 		if ( ! isBlockAllowedInEditor ) {
 			return false;
 		}
 
-		const isEditorLocked = !! templateLock;
-		if ( isEditorLocked ) {
+		const isLocked = !! getLockedState( state, parentUID );
+		if ( isLocked ) {
 			return false;
 		}
 
@@ -1880,4 +1880,23 @@ export function getTokenSettings( state, name ) {
 	}
 
 	return state.tokens[ name ];
+}
+
+/*
+ * Returns the locked state in the context of a given root block.
+ *
+ * @param {Object}  state   Editor state.
+ * @param {?string} rootUID Block UID.
+ *
+ * @return {?string} Locked state in the context of a given block.
+ */
+export function getLockedState( state, rootUID ) {
+	if ( ! rootUID ) {
+		return getTemplateLock( state );
+	}
+	const blockListSettings = getBlockListSettings( state, rootUID );
+	if ( ! blockListSettings ) {
+		return null;
+	}
+	return blockListSettings.lock;
 }

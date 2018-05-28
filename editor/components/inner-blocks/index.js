@@ -1,7 +1,7 @@
 /**
  * External dependencies
  */
-import { pick, get } from 'lodash';
+import { pick } from 'lodash';
 import classnames from 'classnames';
 
 /**
@@ -43,15 +43,19 @@ class InnerBlocks extends Component {
 	updateNestedSettings() {
 		const {
 			blockListSettings,
-			allowedBlocks: nextAllowedBlocks,
+			allowedBlocks,
+			lock,
+			parentLock,
 			updateNestedSettings,
 		} = this.props;
 
-		const allowedBlocks = get( blockListSettings, [ 'allowedBlocks' ] );
-		if ( ! isShallowEqual( allowedBlocks, nextAllowedBlocks ) ) {
-			updateNestedSettings( {
-				allowedBlocks: nextAllowedBlocks,
-			} );
+		const newSettings = {
+			allowedBlocks,
+			lock: lock === undefined ? parentLock : lock,
+		};
+
+		if ( ! isShallowEqual( blockListSettings, newSettings ) ) {
+			updateNestedSettings( newSettings );
 		}
 	}
 
@@ -60,6 +64,7 @@ class InnerBlocks extends Component {
 			uid,
 			layouts,
 			allowedBlocks,
+			lock,
 			template,
 			isSmallScreen,
 			isSelectedBlockInRoot,
@@ -73,7 +78,7 @@ class InnerBlocks extends Component {
 			<div className={ classes }>
 				<BlockList
 					rootUID={ uid }
-					{ ...{ layouts, allowedBlocks, template } }
+					{ ...{ layouts, allowedBlocks, lock, template } }
 				/>
 			</div>
 		);
